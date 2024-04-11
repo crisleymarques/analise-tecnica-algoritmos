@@ -8,53 +8,54 @@
 # s = numero de celulas vazias no original
 
 
-dirrow = [-1, 1, 0, 0]
-dircol = [0, 0, -1, 1]
+def transform_maze(n, m, k, maze):
+    if k == 0: 
+        for row in maze:
+            for element in row:
+                print(element, end="")
+            print("")
+        exit(0)
 
-def bfs(i, j):
-    global k, maze, newmaze, used, delcount
-    used[i][j] = 1
-    ccounter = 0
-    if k <= 0:
-        return 1
-    for d in range(4):
-        newdirrow = i + dirrow[d]
-        newdircol = j + dircol[d]
-        if 0 <= newdirrow < n and 0 <= newdircol < m:
-            if maze[newdirrow][newdircol] != '#' and used[newdirrow][newdircol] != 1:
-                result = bfs(newdirrow, newdircol)
-                if result == 1:
-                    ccounter += 1
-    if ccounter > 1:
-        return 1
-    else:
-        k -= 1
-        if k < 0:
-            return 1
-        newmaze[i][j] = 'X'
-        return 0
+    x, y = -1, -1
+    to_visit = -k 
+    for i in range(n):
+        for j in range(m):
+            if maze[i][j] == '.':
+                to_visit += 1
+                x = i
+                y = j
 
-n, m, k = map(int, input().split())
+    s = [(x, y)]
+    while to_visit > 0 and len(s) > 0:
+        i, j = s.pop()
+        maze[i][j] = '?'
+        to_visit -= 1
 
-maze = []
-newmaze = []
-used = []
+        if i > 0 and maze[i - 1][j] == '.':
+            s.append((i - 1, j))
+            maze[i-1][j] = '@'
 
-for i in range(n):
-    row = input().strip()
-    maze.append(row)
-    newmaze.append(list(row))
-    used.append([0] * m)
-    if '.' in row:
-        si, sj = i, row.index('.')
+        if i < n - 1 and maze[i + 1][j] == '.':
+            s.append((i + 1, j))
+            maze[i+1][j] = '@'
 
-bfs(si, sj)
+        if j > 0 and maze[i][j - 1] == '.':
+            s.append((i, j - 1))
+            maze[i][j-1] = '@'
 
-    
-    
-def transform_maze(n, m, k, original_maze):
-  print(n, m, k, original_maze)
-  return 0
+        if j < m - 1 and maze[i][j + 1] == '.':
+            s.append((i, j + 1))
+            maze[i][j+1] = '@'
+
+    for row in maze:
+        for element in row:
+            if element == '?':
+                print('.', end="")
+            elif element == '.' or element == '@':
+                print('X', end="")
+            else:
+                print(element, end="")
+        print("")
 
 
 n, m, k = map(int, input().split())
@@ -62,15 +63,4 @@ original_maze = []
 for i in range(n):
   original_maze.append(list(input()))
 
-maze = transform_maze(n, m, k, original_maze)
-for line in maze:
-  print(line)
-
-
-'''
-
-#..#
-..#.
-#...
-
-'''
+transform_maze(n, m, k, original_maze)
